@@ -1,0 +1,117 @@
+module.exports = function(grunt) {  
+  grunt.initConfig({
+     meta: {
+            version: '0.1.0'
+        },
+    // 读取package.json文件
+    pkg: grunt.file.readJSON('package.json'),
+    banner: '/*! <%= pkg.title || pkg.name %> - v<%= meta.version %> - ' +
+      '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+    // 任务配置
+    concat: {
+      options: {
+        banner: '<%= banner %>',
+        stripBanners: true
+      },
+      // dist: {
+      //   src: ['js/*.js', 'js/**/*.js'],
+      //   dest: 'dist/<%= pkg.name %>.js'
+      // }
+      dist: {
+        src: [],
+        dest: 'dist/<%= pkg.name %>.js'
+      }
+    },
+    uglify: {
+      options: {
+        banner: '<%= banner %>'
+      },
+      dist: {
+        src: '<%= concat.dist.dest %>',
+        dest: 'dist/<%= pkg.name %>.min.js'
+      }
+    },
+
+
+
+
+
+
+
+    jshint: {
+      options: {
+        curly: true,
+        eqeqeq: true,
+        immed: true,
+        latedef: true,
+        newcap: true,
+        noarg: true,
+        sub: true,
+        undef: true,
+        unused: true,
+        boss: true,
+        eqnull: true,
+        browser: true,
+        force: true,
+        globals: {
+            jQuery: false,
+            $:false,
+            define: false,
+            require:false,
+            console:false,
+            module:false
+        }
+      },
+      gruntfile: {
+        src: 'Gruntfile.js'
+      // files: {'build/js/base.min.js' : ['assets/js/base.js'] }
+      },
+      lib_test: {
+        src: ['lib/**/*.js', 'test/**/*.js']
+      }
+    },
+    qunit: {
+      files: ['test/**/*.html']
+    },
+    watch: {
+      gruntfile: {
+        files: '<%= jshint.gruntfile.src %>',
+        tasks: ['jshint:gruntfile']
+      },
+      lib_test: {
+        files: '<%= jshint.lib_test.src %>',
+        tasks: ['jshint:lib_test', 'qunit']
+      }
+    },
+     htmlhint: {
+            build: {
+                // htmlhintrc: '.htmlhintrc'
+                options: {
+                    'tag-pair': true,
+                    'tagname-lowercase': true,
+                    'attr-lowercase': true,
+                    'attr-value-double-quotes': true,
+                    'doctype-first': false,
+                    'spec-char-escape': true,
+                    'id-unique': true,
+                    'head-script-disabled': true,
+                    'style-disabled': true
+                },
+                src: ['views/**/*.html']
+            }
+        }
+  });
+  // 加载grunt插件
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-qunit');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-htmlhint');
+  // 配置default任务（顺序）
+  // grunt.registerTask('default', ['jshint','htmlhint', 'qunit', 'concat', 'uglify']);
+  grunt.registerTask('default', [ 'concat']);
+};
